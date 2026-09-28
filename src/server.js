@@ -12,6 +12,7 @@ const SECRET = process.env.RSO_CLIENT_SECRET;
 const PAGE = new URL('../public/index.html', import.meta.url);
 const PRIVACY = new URL('../public/privacy.html', import.meta.url);
 const TERMS = new URL('../public/terms.html', import.meta.url);
+const RIOT_VERIFICATION_FILE = new URL('../public/riot.txt', import.meta.url);
 const PUBLIC_PAGES = new Map([
   ['/', PAGE],
   ['/index.html', PAGE],
@@ -251,6 +252,17 @@ async function handler(req, res) {
   try {
     const url = new URL(req.url, BASE);
     const path = url.pathname;
+    // Riot checks this public URL before granting production API credentials.
+    if ((req.method === 'GET' || req.method === 'HEAD') && path === '/riot.txt') {
+      const verification = await fs.readFile(RIOT_VERIFICATION_FILE);
+      res.writeHead(200, {
+        'content-type': 'text/plain; charset=utf-8',
+        'content-length': verification.byteLength,
+        'cache-control': 'no-store',
+        'x-content-type-options': 'nosniff',
+      });
+      return res.end(req.method === 'HEAD' ? undefined : verification);
+    }
     if (req.method === 'GET' && path.startsWith('/assets/')) {
       const asset = path.slice('/assets/'.length);
       if (!PUBLIC_ASSETS.has(asset)) return fail(res, 404, 'not_found', 'Unknown asset');
