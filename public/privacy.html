@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="index,follow">
+    <title>Privacy Policy · Synapse VALO API</title>
+    <link rel="stylesheet" href="./assets/privacy.css">
+  </head>
+  <body>
+    <a href="./index.html">← Synapse VALO API</a>
+    <h1>Privacy Policy</h1>
+    <p>Effective September 28, 2026</p>
+    <p class="notice">We do not sell your personal information or gameplay data. We do process and store limited information needed to connect your Riot account and provide the API. If you share your API key, anyone holding it can request your linked data.</p>
+    <h2>Who operates this service</h2>
+    <p>Synapse VALO API is an independent third-party project operated by SynapseIX. For privacy questions or deletion requests, contact <a href="https://x.com/synapseix">@synapseix on X</a>. Do not send passwords, tokens, or API keys in public messages. The service is not affiliated with or endorsed by Riot Games.</p>
+    <h2>What we process</h2>
+    <p>When you connect through Riot Sign On, the service receives your Riot PUUID, Riot ID (game name and tag), region, OAuth access token, and refresh token. It stores these along with token expiration and your opt-in status. It stores a one-way hash of your generated API key and its creation time, not the raw API key after it is displayed. Your linked match history, match details, and available leaderboard data are requested from Riot when an authorized endpoint is called; the application does not keep a separate match-data database.</p>
+    <p>We do not ask for or store your Riot password. The application does not run advertising, analytics trackers, or marketing cookies. Riot and the hosting provider may separately process connection information under their own policies. Standard infrastructure may produce request logs, including IP addresses and requested paths, depending on host configuration; do not assume that infrastructure logs are disabled.</p>
+    <h2>Why and how data is used</h2>
+    <p>We use the account identifier and OAuth tokens to verify the account you chose to link and maintain that connection. We use the API key hash to authenticate callers. Authorized calls retrieve and return your linked gameplay data. The API key does not give callers your Riot password or OAuth token, but it does let them access data returned by this service.</p>
+    <h2>Who receives data</h2>
+    <p>The service exchanges account information with Riot to provide the connection and API features. Hosting and infrastructure providers process data as needed to operate the service. Anyone you give your API key to can retrieve the data exposed by the API; they may save or publish copies outside our control. We do not sell data or give others access to linked accounts for advertising.</p>
+    <h2>Retention, security, and your choices</h2>
+    <p>The application retains your linked account record and key hash while your account remains connected. Use <code>POST /v1/disconnect</code> with your API key to delete the active local record and revoke its keys. Use <code>POST /v1/key/rotate</code> to invalidate previous keys. Reconnecting also rotates keys. You may separately remove Riot authorization through Riot account settings. Deletion from this application cannot remove copies already obtained by key holders, Riot, infrastructure logs, or any hosting backups. Contact us through the channel above if you cannot use the API to disconnect.</p>
+    <p>Use HTTPS and keep your key private. The current application stores Riot OAuth tokens in the server's persistent data file; access to that file must be restricted by the deployment operator. No online service can guarantee absolute security.</p>
+    <h2>Changes</h2>
+    <p>We may update this policy when the service changes. The effective date above will be updated when material changes are published.</p>
+    <footer>
+      <a href="./terms.html">Terms of Use</a> · <a href="https://github.com/SynapseIX/valo-api">GitHub</a>
+      <p>Synapse VALO API is not affiliated with, sponsored by, or endorsed by Riot Games, Inc. or VALORANT.</p>
+    </footer>
+  </body>
+</html>
