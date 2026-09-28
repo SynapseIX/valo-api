@@ -1,0 +1,37 @@
+body {
+  background: #090d14;
+  color: #edf3ff;
+  font: 16px/1.7 system-ui;
+  max-width: 760px;
+  margin: 5vh auto;
+  padding: 24px;
+}
+
+h1,h2 {
+  line-height: 1.2;
+}
+
+h2 {
+  margin-top: 36px;
+}
+
+p,li {
+  color: #b3c1d4;
+}
+
+a {
+  color: #62d6e8;
+}
+
+.notice {
+  border-left: 3px solid #ef4e66;
+  padding: 12px 18px;
+  background: #241923;
+}
+
+footer {
+  border-top: 1px solid #253449;
+  padding-top: 20px;
+  margin-top: 44px;
+  font-size: 13px;
+}

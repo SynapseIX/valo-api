@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Synapse VALO API: opt-in VALORANT match data and available ranked statistics.">
+    <title>Synapse VALO API — Your stats, your key</title>
+    <link rel="stylesheet" href="./assets/index.css">
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./index.html">SYNAPSE <span>VALO API</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#features">Overview</a>
+        <a href="#connect">Get a key</a>
+        <a href="#docs">Documentation</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/SynapseIX/valo-api" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </header>
+    <main>
+      <div class="hero">
+        <span class="eyebrow">Built for players &amp; developers</span>
+        <h1>VALORANT data.<br>
+          <em>On your terms.</em>
+        </h1>
+        <p class="lead">Connect your Riot account, generate your own API key, and access official match history and ranked leaderboard data through one simple interface.</p>
+        <div class="actions">
+          <a class="button primary" href="#connect">Connect Riot account</a>
+          <a class="button" href="#docs">Read the docs</a>
+        </div>
+        <p class="notice">Synapse VALO API is an independent third-party tool. It is not affiliated with, sponsored by, or endorsed by Riot Games.</p>
+      </div>
+      <section id="features">
+        <span class="eyebrow">What you get</span>
+        <h2>One key. Useful data.</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>Verified account</h3>
+            <p>Link through Riot Sign On. We never ask for your Riot password.</p>
+          </div>
+          <div class="card">
+            <h3>Match history</h3>
+            <p>Retrieve the linked account’s match list and full details for its matches.</p>
+          </div>
+          <div class="card">
+            <h3>Ranked leaderboard</h3>
+            <p>See official rank and ranked rating when Riot includes you on the returned leaderboard.</p>
+          </div>
+        </div>
+      </section>
+      <section id="connect">
+        <div class="signup">
+          <span class="eyebrow">Get started</span>
+          <h2>Connect your account</h2>
+          <p>Choose the VALORANT region where you play. Riot will ask you to sign in, then this site will show your API key once. Save it securely.</p>
+          <label for="region">VALORANT region</label>
+          <select id="region">
+            <option value="na">North America (NA)</option>
+            <option value="br">Brazil (BR)</option>
+            <option value="latam">Latin America (LATAM)</option>
+            <option value="eu">Europe (EU)</option>
+            <option value="ap">Asia Pacific (AP)</option>
+            <option value="kr">Korea (KR)</option>
+          </select>
+          <label class="consent">
+            <input id="consent" type="checkbox">
+            <span>I understand that connecting opts me in to sharing my account and gameplay data with this service. Anyone I give my API key to can access my data through it. I can disconnect and revoke the key.</span>
+          </label>
+          <button class="button primary" id="connectButton" type="button">Continue with Riot</button>
+          <div class="status" id="status" role="status" aria-live="polite">
+          </div>
+          <p>Already have a key? Use it with the endpoints below. Reconnecting rotates your existing key.</p>
+        </div>
+      </section>
+      <section id="docs">
+        <span class="eyebrow">Developer docs</span>
+        <h2>API reference</h2>
+        <p>Base URL: <code>https://valo-api.synapseix.pro</code>. Send your key as <code>Authorization: Bearer val_...</code> over HTTPS.</p>
+        <pre>
+          <code>curl -H 'Authorization: Bearer val_YOUR_KEY' \
+            https://valo-api.synapseix.pro/v1/me</code>
+          </pre>
+          <div class="api-row">
+            <strong>GET /v1/me</strong>
+            <p>Linked Riot ID, PUUID, region, and sharing status.</p>
+          </div>
+          <div class="api-row">
+            <strong>GET /v1/matches</strong>
+            <p>Official match history for the linked account.</p>
+          </div>
+          <div class="api-row">
+            <strong>GET /v1/matches/:matchId</strong>
+            <p>Official match details, only when the linked player appears in that match.</p>
+          </div>
+          <div class="api-row">
+            <strong>GET /v1/rank</strong>
+            <p>Official leaderboard tier, placement, and ranked rating if available. Other players get null values and <code>availability: "unavailable_outside_leaderboard"</code>.</p>
+          </div>
+          <div class="api-row">
+            <strong>POST /v1/key/rotate</strong>
+            <p>Issues a new API key and invalidates previous keys.</p>
+          </div>
+          <div class="api-row">
+            <strong>POST /v1/disconnect</strong>
+            <p>Removes the linked account and invalidates its keys.</p>
+          </div>
+          <div class="api-row">
+            <strong>GET /health · GET /legal</strong>
+            <p>Public health check and legal notice; neither requires an API key.</p>
+          </div>
+          <h3>Example rank response</h3>
+          <pre>
+            <code>{
+              "riotId": "Example#NA1",
+              "act": { "id": "act-uuid", "name": "ACT NAME" },
+              "rank": null,
+              "rr": null,
+              "availability": "unavailable_outside_leaderboard",
+              "source": "riot_official"
+              }</code>
+            </pre>
+            <p class="notice">Riot’s documented API does not offer current rank and RR for every player. This API cannot show a precise current RR outside the available leaderboard entries. Data may be delayed by Riot’s updates or rate limits.</p>
+            <p>Errors use <code>{"error":{"code":"...","message":"..."}}</code>. Common statuses: 400 invalid request, 401 invalid key, 403 consent or match restriction, 404 missing resource, 429 Riot rate limit, 502 Riot failure, 503 missing configuration. The complete endpoint and deployment reference is in the project <a href="https://github.com/SynapseIX/valo-api#readme">README</a> (replace this link before launch).</p>
+          </section>
+          <section id="about">
+            <span class="eyebrow">Transparency</span>
+            <h2>Before you connect</h2>
+            <p>Your API key gives its holder access to the linked account’s data through this service. The server stores Riot OAuth tokens to keep the account connected. Disconnect to delete local account data and invalidate your keys; you may separately withdraw Riot authorization in Riot account settings.</p>
+            <p>Do not publish your API key. Read our <a href="./privacy.html">Privacy Policy</a> and <a href="./terms.html">Terms of Use</a> before connecting. We do not sell player data.</p>
+          </section>
+        </main>
+        <footer>
+          <p>
+            <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> · <a href="https://github.com/SynapseIX/valo-api" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/synapseix" target="_blank" rel="noopener noreferrer">Follow Synapse on X</a> · <a href="https://www.twitch.tv/synapseix" target="_blank" rel="noopener noreferrer">Twitch</a>
+          </p>Synapse VALO API is an independent third-party tool. It is not affiliated with, authorized by, sponsored by, or endorsed by Riot Games, Inc. or VALORANT. Riot Games, VALORANT, and related marks belong to their respective owners.</footer>
+          <script src="./assets/index.js" defer>
+          </script>
+        </body>
+      </html>
