@@ -44,8 +44,8 @@ Synapse VALO API app icon as their logo. The artwork is bundled locally in
 | `brand.css` | Shared logo sizing, brand text, and keyboard focus styles |
 
 Keep these files beside the existing CSS and JavaScript when uploading the
-website. Deploy the updated `src/server.js` too: it serves the image files with
-the correct content types. Relative asset links support direct HTML previews;
+website. Deploy the complete `src/` directory too: the request handler serves
+the image files with the correct content types. Relative asset links support direct HTML previews;
 the OAuth callback resolves them from the site root when rendered by Node.
 
 ### Run the website and API
@@ -65,7 +65,65 @@ npm start
 
 No npm dependencies. `PUBLIC_BASE_URL` must be the public origin without a trailing slash, matching the Riot registered redirect URL. `DATA_FILE` must point to a persistent writable location; use a single running instance with the JSON store. The process must be restarted after changing environment variables. The `/health` endpoint works without Riot credentials; the linking flow requires approved credentials.
 
+## Automated tests
+
+Run these commands from the project directory with Node.js 20 or newer. There
+are no test dependencies to install, and no Riot credentials are needed.
+
+```bash
+npm test
+```
+
+The test runner exits with code `0` when everything passes and a nonzero code
+when a test fails. Use these commands for continuous feedback or coverage:
+
+```bash
+npm run test:watch
+npm run test:coverage
+```
+
+Stop watch mode with `Ctrl+C`. To run only the backend unit tests:
+
+```bash
+node --test test/app.test.js
+```
+
+| File | What it verifies |
+| --- | --- |
+| `test/app.test.js` | Public routes, binary assets, authentication, consent, key rotation, disconnect, OAuth state and region validation, HTML escaping, rank/RR availability, match ownership, Riot errors, and persistence failures |
+| `test/frontend.test.js` | The actual signup script, including consent, local-file previews, loading state, trusted Riot redirects, and error recovery |
+| `test/server.test.js` | Two smoke tests: real HTTP startup and asset delivery, plus key persistence across an application restart |
+| `test-support/fakes.js` | Isolated account fixtures, an in-memory filesystem, mock Riot responses, and request/response helpers |
+
+Backend unit tests inject fake Riot responses, a fake clock, and an in-memory
+filesystem. Frontend unit tests execute the browser script in a Node VM with a
+minimal fake DOM; they do not verify visual layout. The smoke tests use an
+automatically assigned local port and temporary files that are removed afterward.
+They do not use your configured account store or call Riot. Approved credentials
+are still required to test the real Riot sign-in flow on a deployed instance.
+
+`src/app.js` exports `createApp({ env, fetchImpl, fsImpl, now, logger })`, which
+returns a request handler without opening a port. Each instance owns its account
+state. `src/server.js` is the production entry point and starts the HTTP server;
+`npm start` works as before.
+
+The coverage command reports the application handler and signup script. The
+server entry point runs in a separate child process in the HTTP smoke test and
+is not included in that unit coverage percentage. The suite was verified using
+Node.js 24.19.0.
+
+Regression tests also protect fixes for asynchronous route errors escaping the
+error handler, inherited property names being accepted as regions, OAuth state
+remaining valid at its expiration boundary, writes staying blocked after a
+transient disk error, malformed data-store structures, and data paths containing
+spaces or `#` characters.
+
 ## Deploy
+
+When updating an older deployment, include the complete `src/` directory:
+`src/server.js` now imports `src/app.js`. Commit `package.json`, `test/`,
+`test-support/`, and this README as well so the same test suite is available in
+your repository. The Dockerfile already copies both source files.
 
 For a Node hosting panel (including GoDaddy Node apps), upload this directory, select Node 20 or newer, set startup command `npm start`, set the six values in `.env.example` as **server environment variables**, assign a persistent writable absolute `DATA_FILE`, enable HTTPS at the reverse proxy, and register the resulting callback URL in Riot. If your host resets local storage on deployment, mount durable storage or replace the JSON store before production. This simple store is designed for **one process**; concurrent replicas can overwrite each other's data. Restrict file permissions and back up the store securely: it contains Riot OAuth tokens in plaintext. For a larger public service, move tokens to encrypted storage, add request throttling, central persistence, monitoring, and audit logs. The provided Dockerfile expects a writable `/data` volume owned by the container user.
 
@@ -76,7 +134,7 @@ this project's Riot Developer Portal application. The Node server serves that
 file at `https://valo-api.synapseix.pro/riot.txt` as plain text without requiring
 Riot credentials or an API key.
 
-1. Commit `public/riot.txt` and the updated `src/server.js` to the branch connected
+1. Commit `public/riot.txt` and the complete `src/` directory to the branch connected
    to Render. A file added to the repository alone is not sufficient: the server
    must include the `/riot.txt` route.
 2. Wait for the updated Render deployment to become live.
