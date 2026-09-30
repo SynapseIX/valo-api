@@ -15,9 +15,22 @@ main {
   padding: 30px;
 }
 
-h1 { margin-top: 0; }
-p { color: #a5b5cb; }
-a { color: #62d6e8; }
+.brand {
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+p {
+  color: #a5b5cb;
+}
+
+a {
+  color: #62d6e8;
+}
+
 code {
   display: block;
   overflow-wrap: anywhere;

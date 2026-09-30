@@ -43,17 +43,6 @@ header {
   padding-bottom: 24px;
 }
 
-.brand {
-  color: var(--text);
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-decoration: none;
-}
-
-.brand span {
-  color: var(--accent);
-}
-
 nav {
   display: flex;
   gap: 22px;
