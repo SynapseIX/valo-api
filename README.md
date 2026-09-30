@@ -24,10 +24,29 @@ Riot's documented VALORANT endpoints do **not** include a general player-current
 ### Preview the pages directly
 
 Extract the complete ZIP and open `public/index.html` in your browser. Keep the
-`public/assets` folder next to the HTML files: the CSS, JavaScript, and links to
+`public/assets` folder next to the HTML files: the images, CSS, JavaScript, and links to
 `privacy.html` and `terms.html` use relative paths so previews also work with
 `file://` URLs. `connected.html` is a server template; opening it directly previews
 its styling with placeholder account and key values.
+
+### Website logo and icons
+
+The homepage, privacy policy, terms, and account-connected screen use the
+Synapse VALO API app icon as their logo. The artwork is bundled locally in
+`public/assets/`; no external image host is required.
+
+| File | Purpose |
+| --- | --- |
+| `logo.png` | Original 1024 × 1024 PNG artwork |
+| `logo.webp` | Optimized 256 × 256 logo displayed in the page headers |
+| `favicon.png` | 64 × 64 browser tab icon |
+| `apple-touch-icon.png` | 180 × 180 Apple touch icon |
+| `brand.css` | Shared logo sizing, brand text, and keyboard focus styles |
+
+Keep these files beside the existing CSS and JavaScript when uploading the
+website. Deploy the updated `src/server.js` too: it serves the image files with
+the correct content types. Relative asset links support direct HTML previews;
+the OAuth callback resolves them from the site root when rendered by Node.
 
 ### Run the website and API
 
@@ -50,6 +69,25 @@ No npm dependencies. `PUBLIC_BASE_URL` must be the public origin without a trail
 
 For a Node hosting panel (including GoDaddy Node apps), upload this directory, select Node 20 or newer, set startup command `npm start`, set the six values in `.env.example` as **server environment variables**, assign a persistent writable absolute `DATA_FILE`, enable HTTPS at the reverse proxy, and register the resulting callback URL in Riot. If your host resets local storage on deployment, mount durable storage or replace the JSON store before production. This simple store is designed for **one process**; concurrent replicas can overwrite each other's data. Restrict file permissions and back up the store securely: it contains Riot OAuth tokens in plaintext. For a larger public service, move tokens to encrypted storage, add request throttling, central persistence, monitoring, and audit logs. The provided Dockerfile expects a writable `/data` volume owned by the container user.
 
+## Riot domain ownership verification
+
+The package includes `public/riot.txt` containing the verification code shown in
+this project's Riot Developer Portal application. The Node server serves that
+file at `https://valo-api.synapseix.pro/riot.txt` as plain text without requiring
+Riot credentials or an API key.
+
+1. Commit `public/riot.txt` and the updated `src/server.js` to the branch connected
+   to Render. A file added to the repository alone is not sufficient: the server
+   must include the `/riot.txt` route.
+2. Wait for the updated Render deployment to become live.
+3. Open `https://valo-api.synapseix.pro/riot.txt`. It must return HTTP 200 and show
+   exactly the code from the verification screen, without HTML or JSON.
+4. Return to Riot's verification page and click **VERIFY URL**.
+
+If Riot issues a different code, replace the complete contents of `public/riot.txt`
+with the new code and redeploy. This is a public ownership verification code, not
+an API key or client secret. The Dockerfile already copies the `public` directory.
+
 ## Player onboarding and API keys
 
 1. The client opens `GET /auth/riot/start?region=na` (supported: `na`, `br`, `latam`, `eu`, `ap`, `kr`). The region is the player's VALORANT platform shard; it is not inferred from Riot ID.
@@ -61,7 +99,18 @@ The browser callback renders a one-time HTML key screen; clients requesting JSON
 
 ## Endpoints
 
-API responses are JSON with `Cache-Control: no-store`; `/`, `/privacy`, `/terms`, and browser OAuth callbacks return HTML. The server also supports `/index.html`, `/privacy.html`, and `/terms.html` for the relative links used in local previews. These pages, their allowlisted `/assets/*` files, `/health`, `/legal`, and the two `/auth/riot/*` endpoints are public. `/v1/*` requires a player API key. Errors have `{ "error": { "code": "...", "message": "..." } }`. Typical statuses: 400 invalid input, 401 invalid key or expired Riot authorization, 403 revoked sharing or unauthorized match, 404 missing resource, 429 Riot rate limit, 502 upstream failure, 503 missing configuration.
+API responses are JSON with `Cache-Control: no-store` except for `/riot.txt`, which returns plain text; `/`, `/privacy`, `/terms`, and browser OAuth callbacks return HTML. The server also supports `/index.html`, `/privacy.html`, and `/terms.html` for the relative links used in local previews. These pages, their allowlisted `/assets/*` files, `/riot.txt`, `/health`, `/legal`, and the two `/auth/riot/*` endpoints are public. `/v1/*` requires a player API key. Errors have `{ "error": { "code": "...", "message": "..." } }`. Typical statuses: 400 invalid input, 401 invalid key or expired Riot authorization, 403 revoked sharing or unauthorized match, 404 missing resource, 429 Riot rate limit, 502 upstream failure, 503 missing configuration.
+
+### GET /riot.txt (also supports HEAD)
+
+Public Riot domain ownership verification. No authentication or Riot credentials
+are required. Response `200` uses `Content-Type: text/plain; charset=utf-8` and
+contains only the contents of `public/riot.txt`. `HEAD` returns the same headers
+without the response body.
+
+```text
+de2a2b70-e67a-4a00-ac6f-b3adee4a9024
+```
 
 ### GET /legal
 

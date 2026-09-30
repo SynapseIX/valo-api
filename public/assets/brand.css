@@ -1,0 +1,46 @@
+.brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+  color: #edf3ff;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.brand__logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.brand__name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.brand__product {
+  color: #ef4e66;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.brand:focus-visible {
+  outline: 2px solid #62d6e8;
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
+@media (max-width: 480px) {
+  .brand__logo {
+    width: 56px;
+    height: 56px;
+  }
+}

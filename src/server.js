@@ -22,7 +22,18 @@ const PUBLIC_PAGES = new Map([
   ['/terms.html', TERMS],
 ]);
 const ASSETS = new URL('../public/assets/', import.meta.url);
-const PUBLIC_ASSETS = new Set(['index.css', 'index.js', 'privacy.css', 'terms.css', 'connected.css']);
+const PUBLIC_ASSETS = new Map([
+  ['index.css', 'text/css; charset=utf-8'],
+  ['index.js', 'text/javascript; charset=utf-8'],
+  ['privacy.css', 'text/css; charset=utf-8'],
+  ['terms.css', 'text/css; charset=utf-8'],
+  ['connected.css', 'text/css; charset=utf-8'],
+  ['brand.css', 'text/css; charset=utf-8'],
+  ['logo.png', 'image/png'],
+  ['logo.webp', 'image/webp'],
+  ['favicon.png', 'image/png'],
+  ['apple-touch-icon.png', 'image/png'],
+]);
 const REGIONS = {
   na: 'americas',
   br: 'americas',
@@ -210,9 +221,9 @@ async function finishLink(req, url, res) {
   if (req.headers.accept?.includes('text/html')) {
     const page = (await fs.readFile(new URL('../public/connected.html', import.meta.url), 'utf8'))
       // This template is also previewable as a local file. In the nested OAuth
-      // callback route, resolve its stylesheet and home link from the site root.
-      .replace('href="./assets/connected.css"', 'href="/assets/connected.css"')
-      .replace('href="./index.html#docs"', 'href="/index.html#docs"')
+      // callback route, resolve all assets and home links from the site root.
+      .replaceAll('href="./', 'href="/')
+      .replaceAll('src="./', 'src="/')
       .replaceAll('{{RIOT_ID}}', escapeHtml(result.player.riotId))
       .replaceAll('{{REGION}}', escapeHtml(entry.shard))
       .replaceAll('{{API_KEY}}', escapeHtml(apiKey));
@@ -263,15 +274,16 @@ async function handler(req, res) {
       });
       return res.end(req.method === 'HEAD' ? undefined : verification);
     }
-    if (req.method === 'GET' && path.startsWith('/assets/')) {
+    if ((req.method === 'GET' || req.method === 'HEAD') && path.startsWith('/assets/')) {
       const asset = path.slice('/assets/'.length);
       if (!PUBLIC_ASSETS.has(asset)) return fail(res, 404, 'not_found', 'Unknown asset');
-      const body = await fs.readFile(new URL(asset, ASSETS), 'utf8');
+      const body = await fs.readFile(new URL(asset, ASSETS));
       res.writeHead(200, {
-        'content-type': asset.endsWith('.js') ? 'text/javascript; charset=utf-8' : 'text/css; charset=utf-8',
+        'content-type': PUBLIC_ASSETS.get(asset),
+        'content-length': body.byteLength,
         'x-content-type-options': 'nosniff',
       });
-      return res.end(body);
+      return res.end(req.method === 'HEAD' ? undefined : body);
     }
     if (req.method === 'GET' && PUBLIC_PAGES.has(path)) {
       const file = PUBLIC_PAGES.get(path);

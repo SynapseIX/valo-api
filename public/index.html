@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Synapse VALO API: opt-in VALORANT match data and available ranked statistics.">
     <title>Synapse VALO API — Your stats, your key</title>
+    <link rel="icon" type="image/png" sizes="64x64" href="./assets/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
     <link rel="stylesheet" href="./assets/index.css">
+    <link rel="stylesheet" href="./assets/brand.css">
   </head>
   <body>
     <header>
-      <a class="brand" href="./index.html">SYNAPSE <span>VALO API</span></a>
+      <a class="brand" href="./index.html" aria-label="Synapse VALO API home">
+        <img class="brand__logo" src="./assets/logo.webp" alt="" width="64" height="64">
+        <span class="brand__name">SYNAPSE <span class="brand__product">VALO API</span></span>
+      </a>
       <nav aria-label="Main navigation">
         <a href="#features">Overview</a>
         <a href="#connect">Get a key</a>
@@ -106,8 +112,8 @@
             <p>Removes the linked account and invalidates its keys.</p>
           </div>
           <div class="api-row">
-            <strong>GET /health · GET /legal</strong>
-            <p>Public health check and legal notice; neither requires an API key.</p>
+            <strong>GET /health · GET /legal · GET /riot.txt</strong>
+            <p>Public health check, legal notice, and Riot ownership verification; no API key required.</p>
           </div>
           <h3>Example rank response</h3>
           <pre>
@@ -132,7 +138,7 @@
         </main>
         <footer>
           <p>
-            <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> · <a href="https://github.com/SynapseIX/valo-api" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/synapseix" target="_blank" rel="noopener noreferrer">Follow Synapse on X</a> · <a href="https://www.twitch.tv/synapseix" target="_blank" rel="noopener noreferrer">Twitch</a> · <a href="https://kick.com/synapseix" target="_blank" rel="noopener noreferrer">Kick</a>
+            <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a> · <a href="https://github.com/SynapseIX/valo-api" target="_blank" rel="noopener noreferrer">GitHub</a> · <a href="https://x.com/synapseix" target="_blank" rel="noopener noreferrer">X</a> · <a href="https://twitch.tv/synapseix" target="_blank" rel="noopener noreferrer">Twitch</a>· <a href="https://kick.com/synapseix" target="_blank" rel="noopener noreferrer">Kick</a>
           </p>Synapse VALO API is an independent third-party tool. It is not affiliated with, authorized by, sponsored by, or endorsed by Riot Games, Inc. or VALORANT. Riot Games, VALORANT, and related marks belong to their respective owners.</footer>
           <script src="./assets/index.js" defer>
           </script>
